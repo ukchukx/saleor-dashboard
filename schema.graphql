@@ -893,7 +893,7 @@ type CategoryTranslatableContent implements Node {
   seoDescription: String
   id: ID!
   name: String!
-  description: JSONString
+  description: JSONString!
   descriptionJson: JSONString
     @deprecated(
       reason: "Will be removed in Saleor 4.0. Use the `description` field instead."
@@ -1452,7 +1452,7 @@ type CollectionTranslatableContent implements Node {
   seoDescription: String
   id: ID!
   name: String!
-  description: JSONString
+  description: JSONString!
   descriptionJson: JSONString
     @deprecated(
       reason: "Will be removed in Saleor 4.0. Use the `description` field instead."
@@ -1507,6 +1507,7 @@ input ConfigurationItemInput {
 
 enum ConfigurationTypeFieldEnum {
   STRING
+  MULTILINE
   BOOLEAN
   SECRET
   PASSWORD
@@ -4301,7 +4302,7 @@ type PageTranslatableContent implements Node {
   seoDescription: String
   id: ID!
   title: String!
-  content: JSONString
+  content: JSONString!
   contentJson: JSONString
     @deprecated(
       reason: "Will be removed in Saleor 4.0. Use the `content` field instead."
@@ -5105,7 +5106,7 @@ type ProductTranslatableContent implements Node {
   seoTitle: String
   seoDescription: String
   name: String!
-  description: JSONString
+  description: JSONString!
   descriptionJson: JSONString
     @deprecated(
       reason: "Will be removed in Saleor 4.0. Use the `description` field instead."
