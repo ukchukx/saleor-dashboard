@@ -89,7 +89,9 @@ const link = ApolloLink.split(
   uploadLink
 );
 
-const apolloClient = new ApolloClient({
+let apolloClient;
+
+apolloClient = new ApolloClient({
   cache: new InMemoryCache({
     dataIdFromObject: (obj: any) => {
       // We need to set manually shop's ID, since it is singleton and
