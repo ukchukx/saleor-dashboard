@@ -40,7 +40,6 @@ interface UserContext {
     input: RequestExternalLoginInput
   ) => Promise<void>;
   tokenAuthLoading: boolean;
-  tokenRefresh: () => Promise<boolean>;
   tokenVerifyLoading: boolean;
   user?: User;
   autologinPromise?: MutableRefObject<Promise<any>>;
@@ -53,7 +52,6 @@ export const UserContext = React.createContext<UserContext>({
   logout: undefined,
   requestLoginByExternalPlugin: undefined,
   tokenAuthLoading: false,
-  tokenRefresh: undefined,
   tokenVerifyLoading: false
 });
 

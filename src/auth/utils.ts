@@ -11,6 +11,11 @@ export enum TOKEN_STORAGE_KEY {
   CSRF = "csrf"
 }
 
+const AUTH_PLUGIN_STORAGE_KEY = "authPlugin";
+
+export const getAuthPluginFromStorage = () =>
+  localStorage.getItem(AUTH_PLUGIN_STORAGE_KEY);
+
 export const getTokens = () => ({
   auth:
     localStorage.getItem(TOKEN_STORAGE_KEY.AUTH) ||

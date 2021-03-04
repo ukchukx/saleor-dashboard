@@ -1,7 +1,7 @@
 import useAppState from "@saleor/hooks/useAppState";
 import { defaultDataIdFromObject, InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
-import { ApolloLink } from "apollo-link";
+import { ApolloLink, fromPromise } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
 import { createUploadLink } from "apollo-upload-client";
 import React from "react";
@@ -20,7 +20,7 @@ import Auth from "./auth";
 import AuthProvider, { useAuth } from "./auth/AuthProvider";
 import LoginLoading from "./auth/components/LoginLoading/LoginLoading";
 import SectionRoute from "./auth/components/SectionRoute";
-import authLink from "./auth/link";
+import { errorLink, tokenLink } from "./auth/link";
 import { hasPermission } from "./auth/misc";
 import CategorySection from "./categories";
 import ChannelsSection from "./channels";
@@ -100,7 +100,7 @@ const apolloClient = new ApolloClient({
       return defaultDataIdFromObject(obj);
     }
   }),
-  link: authLink.concat(link)
+  link: tokenLink.concat(errorLink(apolloClient)).concat(link)
 });
 
 const App: React.FC = () => {

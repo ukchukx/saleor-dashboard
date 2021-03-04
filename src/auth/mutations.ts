@@ -39,9 +39,14 @@ export const tokenVerifyMutation = gql`
 `;
 
 export const tokenRefreshMutation = gql`
+  ${accountErrorFragment}
   mutation RefreshToken($token: String!) {
     tokenRefresh(csrfToken: $token) {
       token
+      errors: accountErrors {
+        ...AccountErrorFragment
+        message
+      }
     }
   }
 `;

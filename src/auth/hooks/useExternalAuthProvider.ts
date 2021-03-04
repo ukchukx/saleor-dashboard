@@ -10,7 +10,6 @@ import { useMutation } from "react-apollo";
 import {
   externalAuthenticationUrlMutation,
   externalObtainAccessTokensMutation,
-  externalTokenRefreshMutation,
   externalTokenVerifyMutation
 } from "../mutations";
 import {
@@ -23,10 +22,6 @@ import {
   ExternalObtainAccessTokensVariables
 } from "../types/ExternalObtainAccessTokens";
 import {
-  ExternalRefreshToken,
-  ExternalRefreshTokenVariables
-} from "../types/ExternalRefreshToken";
-import {
   ExternalVerifyToken,
   ExternalVerifyTokenVariables
 } from "../types/ExternalVerifyToken";
@@ -34,7 +29,6 @@ import {
   displayDemoMessage,
   getTokens,
   removeTokens,
-  setAuthToken,
   setTokens
 } from "../utils";
 import { UseAuthProvider, UseAuthProviderOpts } from "./useAuthProvider";
@@ -72,7 +66,6 @@ export function useExternalAuthProvider({
 }: UseExternalAuthProviderOpts): UseExternalAuthProvider {
   const [userContext, setUserContext] = useState<undefined | User>(undefined);
   const autologinPromise = useRef<Promise<any>>();
-  const refreshPromise = useRef<Promise<boolean>>();
 
   useEffect(() => {
     const token = getTokens().auth;
@@ -142,13 +135,7 @@ export function useExternalAuthProvider({
     },
     onError: logout
   });
-  const [tokenRefresh] = useMutation<
-    ExternalRefreshToken,
-    ExternalRefreshTokenVariables
-  >(externalTokenRefreshMutation, {
-    client: apolloClient,
-    onError: logout
-  });
+
   const [tokenVerify, tokenVerifyResult] = useMutation<
     ExternalVerifyToken,
     ExternalVerifyTokenVariables
@@ -225,37 +212,12 @@ export function useExternalAuthProvider({
     return result?.data?.externalObtainAccessTokens;
   };
 
-  const refreshToken = (): Promise<boolean> => {
-    if (!!refreshPromise.current) {
-      return refreshPromise.current;
-    }
-
-    return new Promise(resolve => {
-      const token = getTokens().refresh;
-      const input = JSON.stringify({
-        refreshToken: token
-      });
-
-      return tokenRefresh({ variables: { input, pluginId: authPlugin } }).then(
-        refreshData => {
-          if (!!refreshData.data.externalRefresh?.token) {
-            setAuthToken(refreshData.data.externalRefresh.token, persistToken);
-            return resolve(true);
-          }
-
-          return resolve(false);
-        }
-      );
-    });
-  };
-
   return {
     autologinPromise,
     loginByExternalPlugin,
     logout,
     requestLoginByExternalPlugin,
     tokenAuthLoading: obtainAccessTokensOpts.loading,
-    tokenRefresh: refreshToken,
     tokenVerifyLoading: tokenVerifyOpts.loading,
     user: userContext
   };

@@ -12,12 +12,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useMutation } from "react-apollo";
 
-import {
-  tokenAuthMutation,
-  tokenRefreshMutation,
-  tokenVerifyMutation
-} from "../mutations";
-import { RefreshToken, RefreshTokenVariables } from "../types/RefreshToken";
+import { tokenAuthMutation, tokenVerifyMutation } from "../mutations";
 import {
   TokenAuth,
   TokenAuth_tokenCreate,
@@ -28,7 +23,6 @@ import {
   displayDemoMessage,
   getTokens,
   removeTokens,
-  setAuthToken,
   setTokens
 } from "../utils";
 import { UseAuthProvider, UseAuthProviderOpts } from "./useAuthProvider";
@@ -53,7 +47,6 @@ export function useSaleorAuthProvider({
 }: UseSaleorAuthProviderOpts): UseSaleorAuthProvider {
   const [userContext, setUserContext] = useState<undefined | User>(undefined);
   const autologinPromise = useRef<Promise<any>>();
-  const refreshPromise = useRef<Promise<boolean>>();
 
   useEffect(() => {
     const token = getTokens().auth;
@@ -111,13 +104,7 @@ export function useSaleorAuthProvider({
     },
     onError: logout
   });
-  const [tokenRefresh] = useMutation<RefreshToken, RefreshTokenVariables>(
-    tokenRefreshMutation,
-    {
-      client: apolloClient,
-      onError: logout
-    }
-  );
+
   const [tokenVerify, tokenVerifyResult] = useMutation<
     VerifyToken,
     VerifyTokenVariables
@@ -172,32 +159,12 @@ export function useSaleorAuthProvider({
     setTokens(auth, refresh, persistToken);
   };
 
-  const refreshToken = (): Promise<boolean> => {
-    if (!!refreshPromise.current) {
-      return refreshPromise.current;
-    }
-
-    return new Promise(resolve => {
-      const token = getTokens().refresh;
-
-      return tokenRefresh({ variables: { token } }).then(refreshData => {
-        if (!!refreshData.data.tokenRefresh?.token) {
-          setAuthToken(refreshData.data.tokenRefresh.token, persistToken);
-          return resolve(true);
-        }
-
-        return resolve(false);
-      });
-    });
-  };
-
   return {
     autologinPromise,
     login,
     loginByToken,
     logout,
     tokenAuthLoading: tokenAuthOpts.loading,
-    tokenRefresh: refreshToken,
     tokenVerifyLoading: tokenVerifyOpts.loading,
     user: userContext
   };

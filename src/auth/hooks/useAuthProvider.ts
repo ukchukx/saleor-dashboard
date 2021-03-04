@@ -5,13 +5,13 @@ import ApolloClient from "apollo-client";
 import { MutableRefObject } from "react";
 import { IntlShape } from "react-intl";
 
+import { AUTH_PLUGIN_STORAGE_KEY } from "../utils";
 import { useExternalAuthProvider } from "./useExternalAuthProvider";
 import { useSaleorAuthProvider } from "./useSaleorAuthProvider";
 
 export interface UseAuthProvider {
   logout: () => void;
   tokenAuthLoading: boolean;
-  tokenRefresh: () => Promise<boolean>;
   tokenVerifyLoading: boolean;
   user?: User;
   autologinPromise?: MutableRefObject<Promise<any>>;
@@ -23,19 +23,25 @@ export interface UseAuthProviderOpts {
 }
 
 export function useAuthProvider(opts: UseAuthProviderOpts) {
-  const [authPlugin, setAuthPlugin] = useLocalStorage("authPlugin", undefined);
+  const [authPluginData, setAuthPluginData] = useLocalStorage(
+    AUTH_PLUGIN_STORAGE_KEY,
+    {
+      plugin: undefined
+    }
+  );
 
-  const saleorAuth = useSaleorAuthProvider({
-    authPlugin,
-    setAuthPlugin,
-    ...opts
-  });
+  const handleSetAuthPlugin = (plugin?: string) =>
+    setAuthPluginData({ plugin });
 
-  const externalAuth = useExternalAuthProvider({
-    authPlugin,
-    setAuthPlugin,
+  const providerOpts = {
+    authPlugin: authPluginData.plugin,
+    setAuthPlugin: handleSetAuthPlugin,
     ...opts
-  });
+  };
+
+  const saleorAuth = useSaleorAuthProvider(providerOpts);
+
+  const externalAuth = useExternalAuthProvider(providerOpts);
 
   const loginAuth = {
     login: saleorAuth.login,
@@ -44,7 +50,7 @@ export function useAuthProvider(opts: UseAuthProviderOpts) {
     requestLoginByExternalPlugin: externalAuth.requestLoginByExternalPlugin
   };
 
-  if (authPlugin) {
+  if (authPluginData.plugin) {
     return {
       ...externalAuth,
       ...loginAuth
