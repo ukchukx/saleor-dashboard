@@ -1644,7 +1644,6 @@ type DeletePrivateMetadata {
 type DigitalContent implements Node & ObjectWithMetadata {
   useDefaultSettings: Boolean!
   automaticFulfillment: Boolean!
-  productVariant: ProductVariant!
   contentFile: String!
   maxDownloads: Int
   urlValidDays: Int
@@ -1652,6 +1651,7 @@ type DigitalContent implements Node & ObjectWithMetadata {
   id: ID!
   privateMetadata: [MetadataItem]!
   metadata: [MetadataItem]!
+  productVariant: ProductVariant!
 }
 
 type DigitalContentCountableConnection {
@@ -2330,7 +2330,7 @@ type LanguageDisplay {
 
 type LimitInfo {
   currentUsage: Limits!
-  maximumUsage: Limits!
+  allowedUsage: Limits!
 }
 
 type Limits {
@@ -5063,6 +5063,7 @@ type Shop {
   customerSetPasswordUrl: String
   staffNotificationRecipients: [StaffNotificationRecipient]
   limits: LimitInfo!
+  version: String!
 }
 
 type ShopAddressUpdate {
