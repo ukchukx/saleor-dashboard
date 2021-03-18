@@ -75,7 +75,7 @@ const selectors = {
   input: `[data-test="attribute-value"] input`
 };
 
-describe("Product details page", () => {
+describe.skip("Product details page", () => {
   it("can select empty option on attribute", () => {
     const component = mount(
       <Wrapper>
